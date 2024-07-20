@@ -13,7 +13,7 @@ export default authMiddleware({
     '/community',
     '/profile/:id',
   ],
-  ignoredRoutes: ['/api/webhook'],
+  // ignoredRoutes: ['/api/webhook'],
 });
 
 export const config = {
