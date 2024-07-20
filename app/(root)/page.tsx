@@ -16,9 +16,9 @@ import { SearchParamsProps } from '@/types/props';
 import Pagination from '@/components/pagination';
 
 export const metadata: Metadata = {
-  title: 'Dev Overflow | Home',
+  title: 'Dropofe| Home',
   description:
-    'Dev Overflow is a community of developers, where you can ask questions and receive answers from other members of the community.',
+    'Dropofeis a community of developers, where you can ask questions and receive answers from other members of the community.',
 };
 
 export default async function Home({ searchParams }: SearchParamsProps) {

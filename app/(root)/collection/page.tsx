@@ -12,7 +12,7 @@ import QuestionCard from '@/components/cards/question-card';
 import Pagination from '@/components/pagination';
 
 export const metadata: Metadata = {
-  title: 'Dev Overflow | Collections',
+  title: 'Dropofe| Collections',
   description:
     "Your collections of saved questions on Dev Overflow. You can save questions by clicking on the star icon on the question's page",
 };

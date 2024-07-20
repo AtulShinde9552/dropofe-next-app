@@ -4,7 +4,7 @@ import { getUserById } from '@/actions/user.action';
 import ProfileForm from '@/components/forms/profile-form';
 
 export const metadata: Metadata = {
-  title: 'Dev Overflow | Profile Edit',
+  title: 'Dropofe| Profile Edit',
   description: 'Edit your profile on Dev Overflow',
 };
 

@@ -13,13 +13,9 @@ export const sidebarLinks: SidebarLink[] = [
   {
     imgURL: '/assets/icons/users.svg',
     route: '/community',
-    label: 'Community',
+    label: 'user',
   },
-  {
-    imgURL: '/assets/icons/star.svg',
-    route: '/collection',
-    label: 'Collections',
-  },
+
   // {
   //   imgURL: '/assets/icons/suitcase.svg',
   //   route: '/jobs',
@@ -28,7 +24,12 @@ export const sidebarLinks: SidebarLink[] = [
   {
     imgURL: '/assets/icons/tag.svg',
     route: '/tags',
-    label: 'Tags',
+    label: 'Engineering Software',
+  },
+  {
+    imgURL: '/assets/icons/star.svg',
+    route: '/collection',
+    label: 'Collections',
   },
   {
     imgURL: '/assets/icons/user.svg',

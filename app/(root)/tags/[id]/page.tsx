@@ -20,7 +20,7 @@ export async function generateMetadata(
   // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || [];
   return {
-    title: `Dev Overflow | Tag - ${tagName}`,
+    title: `Dropofe| Tag - ${tagName}`,
     openGraph: {
       images: ['/some-specific-page-image.jpg', ...previousImages],
     },

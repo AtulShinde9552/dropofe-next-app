@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import Pagination from '@/components/pagination';
 
 export const metadata: Metadata = {
-  title: 'Dev Overflow | Tags',
+  title: 'Dropofe| Tags',
   description:
     'Tags are a means of connecting experts with questions they will be able to answer by sorting questions into specific, well-defined categories.',
 };
