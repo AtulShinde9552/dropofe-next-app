@@ -1,32 +1,18 @@
-import mongoose, { Mongoose } from 'mongoose';
+import { connect, set } from 'mongoose';
+import envConfig from '@/config';
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-interface MongooseConn {
-  conn: Mongoose | null;
-  promise: Promise<Mongoose> | null;
-}
-
-let cached: MongooseConn = (global as any).mongoose;
-
-if (!cached) {
-  cached = (global as any).mongoose = {
-    conn: null,
-    promise: null,
-  };
-}
+let isConnected = false;
 export default async function connectToDb() {
-  if (cached.conn) return cached.conn;
-
-  cached.promise =
-    cached.promise ||
-    mongoose.connect(MONGODB_URI, {
-      dbName: 'dropofe',
-      bufferCommands: false,
-      connectTimeoutMS: 30000,
-    });
-
-  cached.conn = await cached.promise;
-
-  return cached.conn;
+  set('strictQuery', true);
+  try {
+    if (isConnected) {
+      console.log('Using existing database connection');
+      return;
+    }
+    await connect(envConfig.MONGODB_URI, { dbName: 'dropofe' });
+    console.log('Connected to database');
+    isConnected = true;
+  } catch (err) {
+    console.log('Failed to connect to database', err);
+  }
 }
