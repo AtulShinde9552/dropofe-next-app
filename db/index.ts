@@ -9,7 +9,7 @@ export default async function connectToDb() {
       console.log('Using existing database connection');
       return;
     }
-    await connect(envConfig.MONGODB_URI, { dbName: 'dropofe' });
+    await connect(envConfig.MONGODB_URI, { dbName: 'dev_overflow' });
     console.log('Connected to database');
     isConnected = true;
   } catch (err) {
