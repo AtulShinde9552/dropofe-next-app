@@ -58,24 +58,28 @@ export async function POST(req: Request) {
 
   if (eventType === 'user.created') {
     const { id, first_name, last_name, username, email_addresses, image_url } = evt.data;
+    const isAdmin: boolean = (evt.data as any).isAdmin;
     const payload = {
       clerkId: id,
       name: `${first_name} ${last_name}`,
       username: username!,
       email: email_addresses[0].email_address,
       picture: image_url,
+      isAdmin: isAdmin ?? false,
     };
     const mongoUser = await createUser(payload);
     return NextResponse.json({ message: 'OK', user: mongoUser });
   }
   if (eventType === 'user.updated') {
     const { id, first_name, last_name, username, email_addresses, image_url } = evt.data;
+    const isAdmin: boolean = (evt.data as any).isAdmin;
     const payload = {
       clerkId: id,
       name: `${first_name} ${last_name}`,
       username: username!,
       email: email_addresses[0].email_address,
       picture: image_url,
+      isAdmin: isAdmin ?? false,
     };
     const mongoUser = await updateUser(id, payload);
     return NextResponse.json({ message: 'OK', user: mongoUser });

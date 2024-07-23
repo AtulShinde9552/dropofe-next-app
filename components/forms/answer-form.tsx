@@ -71,7 +71,7 @@ export default function AnswerForm({ questionId, userId, questionTitleContent }:
     }
     setIsSubmittingAI(true);
     try {
-      const res = await fetch(`${envConfig.NEXT_PUBLIC_SERVER_URL}/api/chatgpt`, {
+      const res = await fetch(`${envConfig.NEXT_PUBLIC_SERVER_URL}api/chatgpt`, {
         method: 'POST',
         body: JSON.stringify({ question: questionTitleContent }),
       });

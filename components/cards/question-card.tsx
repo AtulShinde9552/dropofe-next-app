@@ -15,7 +15,7 @@ interface Props {
 
 export default function QuestionCard({ question, clerkId }: Props) {
   const { id, title, tags, views, upvotes, author, answers, createdAt } = question;
-  const showActionButtons = clerkId && clerkId === author.clerkId;
+  const showActionButtons = clerkId && clerkId === author?.clerkId;
 
   return (
     <div className="card-wrapper rounded-lg p-9 sm:px-11">
@@ -43,16 +43,23 @@ export default function QuestionCard({ question, clerkId }: Props) {
         <hr className="mt-2" />
         <div className="small-medium mt-2 flex justify-between gap-3 text-slate-400 max-md:flex-col">
           <div className="flex items-center gap-1">
-            <Link href={author.username} className="flex items-center gap-2">
-              <Image
-                src={author.picture}
-                alt={author.name}
-                width={25}
-                height={25}
-                className="h-5 w-5 rounded-full"
-              />
-              <p className="text-[13px] hover:underline">{author.name}</p>
-            </Link>
+            {author && author.username ? (
+              <Link href={author.username} className="flex items-center gap-2">
+                <Image
+                  src={author.picture}
+                  alt={author.name}
+                  width={25}
+                  height={25}
+                  className="h-5 w-5 rounded-full"
+                />
+                <p className="text-[13px] hover:underline">{author.name}</p>
+              </Link>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="h-5 w-5 rounded-full bg-gray-300" />
+                <p className="text-[13px] text-gray-400">Unknown Author</p>
+              </div>
+            )}
             <p className="subtle-regular text-dark400_light700 hidden lg:flex">
               - asked {getTimeStamp(createdAt)} ago
             </p>
