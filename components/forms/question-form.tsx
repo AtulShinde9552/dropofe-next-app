@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,6 +23,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getUserById } from '@/actions/user.action';
 import { createQuestion, updateQuestion } from '@/actions/question.action';
 import { TagBadge } from '../tags-badge';
+import { getPopularTags } from '@/actions/tag.action';
 import { useTheme } from 'next-themes';
 
 const formSchema = z.object({
@@ -39,16 +40,25 @@ interface Props {
   questionDetails?: string;
 }
 
-const tagSuggestions = ['SACS', '#NODE', 'JAVA', 'ANSYS'];
-
 export default function QuestionForm({ userId, type, questionDetails }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [popularTags, setPopularTags] = useState<string[]>([]);
   const editorRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
   const { theme } = useTheme();
+
+  useEffect(() => {
+    async function fetchTags() {
+      const tags = await getPopularTags();
+      console.log('Fetched tags:', tags); // Add logging to debug the fetched tags
+      const plainTags = tags.map((tag) => tag.name); // Convert to plain strings
+      setPopularTags(plainTags);
+    }
+    fetchTags();
+  }, []);
 
   const parsedQuestionDetails = JSON.parse(questionDetails || '{}');
   const questionTags = parsedQuestionDetails?.tags?.map((tag: any) => tag.name);
@@ -58,7 +68,8 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
     setInputValue(value);
 
     if (value) {
-      setFilteredSuggestions(tagSuggestions.filter((tag) => tag.toLowerCase().includes(value)));
+      const filtered = popularTags.filter((tag) => tag.toLowerCase().includes(value));
+      setFilteredSuggestions(filtered);
     } else {
       setFilteredSuggestions([]);
     }
