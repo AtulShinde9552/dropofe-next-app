@@ -39,8 +39,12 @@ interface Props {
   questionDetails?: string;
 }
 
+const tagSuggestions = ['SACS', '#NODE', 'JAVA', 'ANSYS'];
+
 export default function QuestionForm({ userId, type, questionDetails }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const editorRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -49,25 +53,37 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
   const parsedQuestionDetails = JSON.parse(questionDetails || '{}');
   const questionTags = parsedQuestionDetails?.tags?.map((tag: any) => tag.name);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.trim().toLowerCase();
+    setInputValue(value);
+
+    if (value) {
+      setFilteredSuggestions(tagSuggestions.filter((tag) => tag.toLowerCase().includes(value)));
+    } else {
+      setFilteredSuggestions([]);
+    }
+  };
+
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: any) => {
-    if (e.key === 'Enter' && field.name === 'tags') {
+    if (e.key === 'Enter' && inputValue) {
       e.preventDefault();
-      const tagInput = e.target as HTMLInputElement;
-      const tagValue = tagInput.value.trim().toLocaleLowerCase(); // trim for removing spaces and toLowerCase for consistency
-      if (tagValue.length > 15) {
-        form.setError('tags', {
-          type: 'required',
-          message: 'Tag length should be less than 15 characters',
-        });
-      }
-      if (!field.value.includes(tagValue as never)) {
+      const tagValue = inputValue.trim().toLowerCase();
+      if (tagValue.length <= 15 && !field.value.includes(tagValue)) {
         form.setValue('tags', [...field.value, tagValue]);
-        tagInput.value = '';
-        form.clearErrors('tags');
+        setInputValue('');
+        setFilteredSuggestions([]);
       } else {
         form.trigger();
       }
     }
+  };
+
+  const handleSuggestionClick = (tag: string) => {
+    if (!form.getValues('tags').includes(tag.toLowerCase())) {
+      form.setValue('tags', [...form.getValues('tags'), tag.toLowerCase()]);
+    }
+    setInputValue('');
+    setFilteredSuggestions([]);
   };
 
   const handleTagRemove = (tag: string, field: any) => {
@@ -200,12 +216,35 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
               </FormLabel>
               <FormControl>
                 <>
-                  <Input
-                    placeholder="Add tags..."
-                    disabled={type === 'Edit'}
-                    className="paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 border"
-                    onKeyDown={(e) => handleInputKeyDown(e, field)}
-                  />
+                  <div className="relative">
+                    <Input
+                      placeholder="Add tags..."
+                      disabled={type === 'Edit'}
+                      className="paragraph-regular light-border-2 background-light700_dark300 text-dark300_light700 border"
+                      onChange={handleInputChange}
+                      onKeyDown={(e) => handleInputKeyDown(e, field)}
+                      value={inputValue}
+                    />
+                    {filteredSuggestions.length > 0 && (
+                      <div
+                        className={`absolute mt-2 w-full border ${
+                          theme === 'dark' ? 'bg-dark-400' : 'bg-white'
+                        } z-10 shadow-lg`}
+                      >
+                        {filteredSuggestions.map((suggestion) => (
+                          <div
+                            key={suggestion}
+                            className={`cursor-pointer p-2 ${
+                              theme === 'dark' ? 'hover:bg-dark-400' : 'hover:bg-gray-200'
+                            }`}
+                            onClick={() => handleSuggestionClick(suggestion)}
+                          >
+                            {suggestion}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {field.value.length > 0 && (
                     <div className="mt-2.5 flex items-center gap-2.5">
                       {field.value.map((tag: string) => (
@@ -227,7 +266,7 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
               <FormDescription>
                 Type & then press
                 <kbd className="font-semibold text-light-500"> Enter ↵ </kbd>
-                to add a tag. Add upto 3 tags to describe what your question is about. You need to
+                to add a tag. Add up to 3 tags to describe what your question is about. You need to
                 press enter to add a tag.
               </FormDescription>
               <FormMessage className="text-red-500" />

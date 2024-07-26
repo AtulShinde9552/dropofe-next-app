@@ -41,7 +41,7 @@ export default function AnswerForm({ questionId, userId, questionTitleContent }:
 
   async function onSubmit(values: FormValues) {
     if (!userId) {
-      return toast.error('You mussed be logged in to answer question');
+      return toast.error('You must be logged in to answer the question');
     }
     setIsSubmitting(true);
     try {
@@ -67,22 +67,35 @@ export default function AnswerForm({ questionId, userId, questionTitleContent }:
 
   const generateAIAnswer = async () => {
     if (!userId) {
-      return toast.error('You mussed be logged in to generate AI answer');
+      return toast.error('You must be logged in to generate an AI answer');
     }
     setIsSubmittingAI(true);
     try {
       const res = await fetch(`${envConfig.NEXT_PUBLIC_SERVER_URL}api/chatgpt`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ question: questionTitleContent }),
       });
       const aiAnswer = await res.json();
-      // convert plain text to html
-      const htmlAnswer = aiAnswer.reply.replace(/\n/g, '<br />');
-      if (editorRef.current) {
-        const editor = editorRef.current as any;
-        editor.setContent(htmlAnswer);
+
+      // Log the response to understand its structure
+      console.log('AI Answer Response:', aiAnswer);
+
+      // Check if aiAnswer.reply exists and is a string
+      if (aiAnswer && aiAnswer.reply && typeof aiAnswer.reply === 'string') {
+        // Convert plain text to HTML
+        const htmlAnswer = aiAnswer.reply.replace(/\n/g, '<br />');
+        if (editorRef.current) {
+          const editor = editorRef.current as any;
+          editor.setContent(htmlAnswer);
+        }
+        toast.success('AI Answer generated successfully');
+      } else {
+        toast.error('Unexpected AI response structure');
+        console.error('AI Answer Response:', aiAnswer); // Log for further debugging
       }
-      toast.success('AI Answer generated successfully');
     } catch (error) {
       console.log(error);
       toast.error('Something went wrong');
