@@ -19,8 +19,18 @@ interface Tag {
   name: string;
   Developedby: string;
   description: string;
+  Companywebsite: string;
   questions: { length: number };
 }
+
+const truncateDescription = (description?: string, wordLimit = 6) => {
+  if (!description) return '';
+  const words = description.split(' ');
+  if (words.length > wordLimit) {
+    return words.slice(0, wordLimit).join(' ') + '...';
+  }
+  return description;
+};
 
 export default function TagsPage({ searchParams }: SearchParamsProps) {
   const [tags, setTags] = useState<Tag[]>([]);
@@ -72,8 +82,11 @@ export default function TagsPage({ searchParams }: SearchParamsProps) {
                     {tag.name}
                   </p>
                 </div>
-                <p className="font-semibold text-gray-500">{tag.Developedby}</p>
-                <p className="text-center font-semibold text-gray-500">{tag.description}</p>
+                <p className="font-semibold text-[#ff7000] ">{tag.Developedby}</p>
+                <span className="text-xs text-[#ff7000] ">{tag.Companywebsite}</span>
+                <p className="text-center font-semibold text-gray-500">
+                  {truncateDescription(tag.description, 10)}
+                </p>
                 <p className="text-dark400_light500 text-sm">
                   <span className="primary-text-gradient mr-2 font-semibold">
                     {tag.questions.length}+

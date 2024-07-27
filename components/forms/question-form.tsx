@@ -23,7 +23,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getUserById } from '@/actions/user.action';
 import { createQuestion, updateQuestion } from '@/actions/question.action';
 import { TagBadge } from '../tags-badge';
-import { getPopularTags } from '@/actions/tag.action';
+import { getAllTags } from '@/actions/tag.action'; // Updated import
 import { useTheme } from 'next-themes';
 
 const formSchema = z.object({
@@ -44,7 +44,7 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
-  const [popularTags, setPopularTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]); // Renamed state
   const editorRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -52,10 +52,9 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
 
   useEffect(() => {
     async function fetchTags() {
-      const tags = await getPopularTags();
-      console.log('Fetched tags:', tags); // Add logging to debug the fetched tags
+      const { tags } = await getAllTags({ page: 1, pageSize: 100 }); // Adjust parameters as needed
       const plainTags = tags.map((tag) => tag.name); // Convert to plain strings
-      setPopularTags(plainTags);
+      setTags(plainTags); // Updated state
     }
     fetchTags();
   }, []);
@@ -68,7 +67,7 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
     setInputValue(value);
 
     if (value) {
-      const filtered = popularTags.filter((tag) => tag.toLowerCase().includes(value));
+      const filtered = tags.filter((tag) => tag.toLowerCase().includes(value)); // Updated state
       setFilteredSuggestions(filtered);
     } else {
       setFilteredSuggestions([]);
