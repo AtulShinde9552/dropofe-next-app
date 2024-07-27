@@ -116,3 +116,52 @@ export const getPopularTags = async () => {
     throw error;
   }
 };
+
+export const createTag = async ({
+  name,
+  description,
+  Developedby,
+  Companywebsite,
+}: {
+  name: string;
+  description: string;
+  Developedby: string;
+  Companywebsite: string;
+}) => {
+  try {
+    if (
+      !name ||
+      typeof name !== 'string' ||
+      name.trim() === '' ||
+      !description ||
+      typeof description !== 'string' ||
+      description.trim() === '' ||
+      !Developedby ||
+      typeof Developedby !== 'string' ||
+      Developedby.trim() === '' ||
+      !Companywebsite ||
+      typeof Companywebsite !== 'string' ||
+      Companywebsite.trim() === ''
+    ) {
+      throw new Error('Invalid input');
+    }
+
+    const existingTag = await Tag.findOne({ name: name.trim() });
+    if (existingTag) {
+      throw new Error('Tag already exists');
+    }
+
+    const newTag = new Tag({
+      name: name.trim(),
+      description: description.trim(),
+      Developedby: Developedby.trim(),
+      Companywebsite: Companywebsite.trim(),
+    });
+
+    await newTag.save();
+    return newTag;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};

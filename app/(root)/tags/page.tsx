@@ -1,4 +1,6 @@
-import { Metadata } from 'next';
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SearchIcon } from 'lucide-react';
 import { SearchParamsProps } from '@/types/props';
@@ -12,19 +14,31 @@ import { tagVariants } from '@/components/tags-badge';
 import { cn } from '@/lib/utils';
 import Pagination from '@/components/pagination';
 
-export const metadata: Metadata = {
-  title: 'Dropofe| Tags',
-  description:
-    'Tags are a means of connecting experts with questions they will be able to answer by sorting questions into specific, well-defined categories.',
-};
+interface Tag {
+  _id: string;
+  name: string;
+  Developedby: string;
+  description: string;
+  questions: { length: number };
+}
 
-export default async function TagsPage({ searchParams }: SearchParamsProps) {
-  const result = await getAllTags({
-    searchQuery: searchParams.q,
-    filter: searchParams.filter,
-    page: Number(searchParams.page) || 1,
-  });
-  const { tags, isNext } = result;
+export default function TagsPage({ searchParams }: SearchParamsProps) {
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [isNext, setIsNext] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      const result = await getAllTags({
+        searchQuery: searchParams.q,
+        filter: searchParams.filter,
+        page: Number(searchParams.page) || 1,
+      });
+      setTags(result.tags);
+      setIsNext(result.isNext);
+    };
+    fetchTags();
+  }, [searchParams]);
 
   return (
     <>
@@ -58,6 +72,8 @@ export default async function TagsPage({ searchParams }: SearchParamsProps) {
                     {tag.name}
                   </p>
                 </div>
+                <p className="font-semibold text-gray-500">{tag.Developedby}</p>
+                <p className="text-center font-semibold text-gray-500">{tag.description}</p>
                 <p className="text-dark400_light500 text-sm">
                   <span className="primary-text-gradient mr-2 font-semibold">
                     {tag.questions.length}+
