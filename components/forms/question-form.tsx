@@ -228,7 +228,7 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
                     // },
                     setup: (editor) => {
                       editor.on('init', () => {
-                        editor.contentDocument.querySelector('p')?.remove(); // Remove footer paragraph
+                        editor.contentDocument.querySelector('p')?.remove();
                       });
                     },
                   }}
