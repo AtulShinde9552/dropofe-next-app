@@ -7,6 +7,7 @@ import getTimeStamp from '@/utils/getTimeStamp';
 import ParseHTML from './parse-html';
 import Votes from './votes';
 import Pagination from './pagination';
+import ReplyForm from './forms/reply-form';
 
 interface Props {
   questionId: string;
@@ -65,6 +66,7 @@ export default async function AllAnswers({
               </div>
             </div>
             <ParseHTML content={answer.content} />
+            <ReplyForm answerId={answer._id.toString()} userId={userId} />
           </article>
         ))}
       </div>

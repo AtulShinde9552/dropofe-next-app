@@ -13,6 +13,13 @@ export interface GetAllAnswersParams {
   page?: number;
   pageSize?: number;
 }
+export interface CreateReplyParams {
+  content: string;
+  answerId: string;
+  author: string;
+  path: string;
+}
+
 export interface AnswerVoteParams {
   answerId: string;
   userId: string;

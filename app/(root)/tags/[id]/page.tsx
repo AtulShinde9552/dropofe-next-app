@@ -16,7 +16,7 @@ export async function generateMetadata(
   const id = params.id;
   // fetch data
   const tag = await getQuestionsByTagId({ tagId: id });
-  const { tagName } = tag;
+  const { tagName, companyName } = tag;
   // optionally access and extend (rather than replace) parent metadata
   const previousImages = (await parent).openGraph?.images || [];
   return {
@@ -33,11 +33,18 @@ export default async function TagDetailsPage({ params, searchParams }: ParamsSea
     searchQuery: searchParams.q,
     page: Number(searchParams.page) || 1,
   });
-  const { tagName, questions, isNext } = tag;
+  const { companyWeb, companyName, tagName, questions, isNext } = tag;
 
   return (
     <>
       <h1 className="h1-bold uppercase">{tagName}</h1>
+      <span className="text-xs">
+        owned by- <span className="text-lg text-[#ff7000]">{companyName}</span>
+      </span>
+
+      <a href="" className="text-xs text-blue-400">
+        {companyWeb}
+      </a>
       <div className="mt-11">
         <LocalSearch
           route={`/tags/${params.id}`}

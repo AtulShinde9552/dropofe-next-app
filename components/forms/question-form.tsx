@@ -23,7 +23,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getUserById } from '@/actions/user.action';
 import { createQuestion, updateQuestion } from '@/actions/question.action';
 import { TagBadge } from '../tags-badge';
-import { getAllTags } from '@/actions/tag.action'; // Updated import
+import { getAllTags } from '@/actions/tag.action';
 import { useTheme } from 'next-themes';
 
 const formSchema = z.object({
@@ -44,7 +44,7 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
-  const [tags, setTags] = useState<string[]>([]); // Renamed state
+  const [tags, setTags] = useState<string[]>([]);
   const editorRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -52,9 +52,9 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
 
   useEffect(() => {
     async function fetchTags() {
-      const { tags } = await getAllTags({ page: 1, pageSize: 100 }); // Adjust parameters as needed
-      const plainTags = tags.map((tag) => tag.name); // Convert to plain strings
-      setTags(plainTags); // Updated state
+      const { tags } = await getAllTags({ page: 1, pageSize: 100 });
+      const plainTags = tags.map((tag) => tag.name);
+      setTags(plainTags);
     }
     fetchTags();
   }, []);
@@ -67,7 +67,7 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
     setInputValue(value);
 
     if (value) {
-      const filtered = tags.filter((tag) => tag.toLowerCase().includes(value)); // Updated state
+      const filtered = tags.filter((tag) => tag.toLowerCase().includes(value));
       setFilteredSuggestions(filtered);
     } else {
       setFilteredSuggestions([]);
@@ -201,17 +201,39 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
                       'table',
                     ],
                     toolbar:
-                      'undo redo | codesample | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist fullscreen',
+                      'undo redo | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist image fullscreen',
                     content_style: 'body { font-family:Inter; font-size:14px }',
                     skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
                     content_css: theme === 'dark' ? 'dark' : 'light',
+                    // images_upload_handler: async (
+                    //   blobInfo: { blob: () => Blob; filename: () => string | undefined },
+                    //   success: (arg0: any) => void,
+                    //   failure: (arg0: string) => void,
+                    // ) => {
+                    //   try {
+                    //     const formData = new FormData();
+                    //     formData.append('file', blobInfo.blob(), blobInfo.filename());
+                    //     const response = await fetch('/api/upload', {
+                    //       method: 'POST',
+                    //       body: formData,
+                    //     });
+                    //     if (!response.ok) {
+                    //       throw new Error('Image upload failed');
+                    //     }
+                    //     const result = await response.json();
+                    //     success(result.url);
+                    //   } catch (error) {
+                    //     failure('Image upload failed');
+                    //   }
+                    // },
+                    setup: (editor) => {
+                      editor.on('init', () => {
+                        editor.contentDocument.querySelector('p')?.remove(); // Remove footer paragraph
+                      });
+                    },
                   }}
                 />
               </FormControl>
-              <FormDescription>
-                Introduce the problem and expand the context to include any extra details that help.
-                Minimum 10 characters.
-              </FormDescription>
               <FormMessage className="text-red-500" />
             </FormItem>
           )}

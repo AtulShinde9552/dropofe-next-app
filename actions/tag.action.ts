@@ -96,7 +96,13 @@ export const getQuestionsByTagId = async (params: GetQuestionsByTagIdParams) => 
       match: searchQuery ? { title: { $regex: searchQuery, $options: 'i' } } : {},
     });
     const isNext = tag2.questions.length > skip + questions.length;
-    return { tagName: tag.name, questions, isNext };
+    return {
+      companyWeb: tag.Companywebsite,
+      tagName: tag.name,
+      companyName: tag.Developedby,
+      questions,
+      isNext,
+    };
   } catch (error) {
     console.log(error);
     throw error;

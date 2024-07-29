@@ -8,7 +8,6 @@ export interface IUser {
   password?: string;
   bio?: string;
   picture: string;
-  isAdmin: boolean;
   location?: string;
   portfolio?: string;
   reputation?: number;
@@ -22,7 +21,6 @@ const userSchema = new Schema<IUser>(
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String },
-    isAdmin: { type: Boolean, default: false },
     bio: { type: String },
     picture: { type: String, required: true },
     location: { type: String },
