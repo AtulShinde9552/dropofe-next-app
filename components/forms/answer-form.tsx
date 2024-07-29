@@ -158,6 +158,11 @@ export default function AnswerForm({ questionId, userId, questionTitleContent }:
                       content_style: 'body { font-family:Inter; font-size:14px }',
                       skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
                       content_css: theme === 'dark' ? 'dark' : 'light',
+                      setup: (editor) => {
+                        editor.on('init', () => {
+                          editor.contentDocument.querySelector('p')?.remove();
+                        });
+                      },
                     }}
                   />
                 </FormControl>
