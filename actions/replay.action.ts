@@ -39,17 +39,18 @@ export const getRepliesByAnswerId = async (answerId: string) => {
 };
 
 export const updateReply = async (replyId: string, content: string) => {
+  if (!replyId || !content) {
+    throw new Error('Missing required fields');
+  }
+
   try {
-    const reply = await Reply.findById(replyId);
+    const updatedReply = await Reply.findByIdAndUpdate(
+      replyId,
+      { content },
+      { new: true }, // Return the updated document
+    ).lean(); // Convert to plain object
 
-    if (!reply) {
-      throw new Error('Reply not found');
-    }
-
-    reply.content = content;
-    await reply.save();
-
-    return reply;
+    return updatedReply;
   } catch (error) {
     console.error('Error updating reply:', error);
     throw new Error('Failed to update reply');
