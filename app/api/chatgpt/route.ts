@@ -1,55 +1,65 @@
-import envConfig from '@/config';
 import { NextResponse } from 'next/server';
+import { createReply, getRepliesByAnswerId, updateReply } from '@/actions/replay.action';
 
-export const POST = async (request: Request) => {
+export async function POST(request: Request) {
   try {
-    // Parse the request body to extract the question
-    const { question } = await request.json();
+    const { answerId, userId, content } = await request.json();
 
-    // Construct the request payload for the OpenAI API
-    const payload = {
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a knowledgeable assistant that provides quality information.',
-        },
-        {
-          role: 'user',
-          content: `Tell me ${question}`,
-        },
-      ],
-    };
+    console.log('Received data:', { answerId, userId, content });
 
-    // Make the API request to OpenAI
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${envConfig.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify(payload),
+    if (!answerId || !userId || !content) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const reply = await createReply({
+      content,
+      answerId,
+      author: userId,
+      path: `/questions/${answerId}`,
     });
 
-    // Parse the response from the OpenAI API
-    const data = await res.json();
-
-    // Log the entire response for debugging purposes
-    console.log('OpenAI API Full Response:', data);
-
-    // Check for the expected response structure
-    if (data.choices && data.choices.length > 0 && data.choices[0].message) {
-      const reply = data.choices[0].message.content;
-      // Return the reply as a JSON response
-      return NextResponse.json({ reply });
-    } else {
-      // Log detailed information for debugging
-      console.error('Unexpected API response structure:', JSON.stringify(data));
-      throw new Error('Unexpected API response structure');
-    }
-  } catch (err: any) {
-    // Log the error and return an error response
-    console.error('Error:', err);
-    return NextResponse.json({ error: err.message, details: err });
+    return NextResponse.json(reply, { status: 200 });
+  } catch (error) {
+    console.error('Error creating reply:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
-};
+}
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const answerId = searchParams.get('answerId');
+
+    console.log('Fetching replies for answerId:', answerId);
+
+    if (!answerId) {
+      return NextResponse.json({ error: 'Missing answerId parameter' }, { status: 400 });
+    }
+
+    const replies = await getRepliesByAnswerId(answerId);
+
+    return NextResponse.json(replies, { status: 200 });
+  } catch (error) {
+    console.error('Error fetching replies:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const { replyId, content } = await request.json();
+
+    console.log('Updating reply:', { replyId, content });
+
+    if (!replyId || !content) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const updatedReply = await updateReply(replyId, content);
+
+    return NextResponse.json(updatedReply, { status: 200 });
+  } catch (error) {
+    console.error('Error updating reply:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
