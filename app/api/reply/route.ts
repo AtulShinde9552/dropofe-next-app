@@ -5,8 +5,6 @@ export async function POST(request: Request) {
   try {
     const { answerId, userId, content } = await request.json();
 
-    console.log('Received data:', { answerId, userId, content });
-
     if (!answerId || !userId || !content) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
@@ -30,8 +28,6 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const answerId = searchParams.get('answerId');
 
-    console.log('Fetching replies for answerId:', answerId);
-
     if (!answerId) {
       return NextResponse.json({ error: 'Missing answerId parameter' }, { status: 400 });
     }
@@ -49,8 +45,6 @@ export async function PUT(request: Request) {
   try {
     const { replyId, content } = await request.json();
 
-    console.log('Updating reply:', { replyId, content });
-
     if (!replyId || !content) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
@@ -63,3 +57,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+// Exporting configuration for Vercel
+export const maxDuration = 5; // This function can run for a maximum of 5 seconds
+export const dynamic = 'force-dynamic';
