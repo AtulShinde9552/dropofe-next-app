@@ -13,6 +13,7 @@ import NoResult from '@/components/no-result';
 import { tagVariants } from '@/components/tags-badge';
 import { cn } from '@/lib/utils';
 import Pagination from '@/components/pagination';
+import Spinner from '@/app/(root)/_components/spinner'; // Import Spinner component
 
 interface Tag {
   _id: string;
@@ -35,10 +36,11 @@ const truncateDescription = (description?: string, wordLimit = 6) => {
 export default function TagsPage({ searchParams }: SearchParamsProps) {
   const [tags, setTags] = useState<Tag[]>([]);
   const [isNext, setIsNext] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchTags = async () => {
+      setLoading(true); // Set loading to true before fetching
       const result = await getAllTags({
         searchQuery: searchParams.q,
         filter: searchParams.filter,
@@ -46,6 +48,7 @@ export default function TagsPage({ searchParams }: SearchParamsProps) {
       });
       setTags(result.tags);
       setIsNext(result.isNext);
+      setLoading(false); // Set loading to false after fetching
     };
     fetchTags();
   }, [searchParams]);
@@ -64,7 +67,9 @@ export default function TagsPage({ searchParams }: SearchParamsProps) {
         <Filter filters={TagFilters} />
       </div>
       <section className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-4">
-        {tags.length > 0 ? (
+        {loading ? (
+          <Spinner /> // Render spinner while loading
+        ) : tags.length > 0 ? (
           tags.map((tag) => (
             <Link
               href={`tags/${tag._id}`}
