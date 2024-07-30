@@ -45,7 +45,7 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
   const [inputValue, setInputValue] = useState('');
   const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
-  const editorRef = useRef(null);
+  const editorRef = useRef<any>(null);
   const router = useRouter();
   const pathname = usePathname();
   const { theme } = useTheme();
@@ -205,31 +205,40 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
                     content_style: 'body { font-family:Inter; font-size:14px }',
                     skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
                     content_css: theme === 'dark' ? 'dark' : 'light',
-                    // images_upload_handler: async (
-                    //   blobInfo: { blob: () => Blob; filename: () => string | undefined },
-                    //   success: (arg0: any) => void,
-                    //   failure: (arg0: string) => void,
-                    // ) => {
-                    //   try {
-                    //     const formData = new FormData();
-                    //     formData.append('file', blobInfo.blob(), blobInfo.filename());
-                    //     const response = await fetch('/api/upload', {
-                    //       method: 'POST',
-                    //       body: formData,
-                    //     });
-                    //     if (!response.ok) {
-                    //       throw new Error('Image upload failed');
-                    //     }
-                    //     const result = await response.json();
-                    //     success(result.url);
-                    //   } catch (error) {
-                    //     failure('Image upload failed');
-                    //   }
-                    // },
                     setup: (editor) => {
                       editor.on('init', () => {
                         editor.contentDocument.querySelector('p')?.remove();
                       });
+                    },
+                    automatic_uploads: true,
+                    image_title: true,
+                    file_picker_types: 'image',
+                    file_picker_callback: (cb, value, meta) => {
+                      const input = document.createElement('input');
+                      input.setAttribute('type', 'file');
+                      input.setAttribute('accept', 'image/*');
+
+                      input.addEventListener('change', (e) => {
+                        const target = e.target as HTMLInputElement | null;
+                        if (target && target.files) {
+                          const file = target.files[0];
+                          const reader = new FileReader();
+                          reader.addEventListener('load', () => {
+                            if (editorRef.current && reader.result) {
+                              const base64 = (reader.result as string).split(',')[1];
+                              const id = 'blobid' + new Date().getTime();
+                              const blobCache = editorRef.current.editorUpload.blobCache;
+                              const blobInfo = blobCache.create(id, file, base64);
+                              blobCache.add(blobInfo);
+
+                              cb(blobInfo.blobUri(), { title: file.name });
+                            }
+                          });
+                          reader.readAsDataURL(file);
+                        }
+                      });
+
+                      input.click();
                     },
                   }}
                 />

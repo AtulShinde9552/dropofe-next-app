@@ -29,7 +29,7 @@ interface Props {
 export default function AnswerForm({ questionId, userId, questionTitleContent }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmittingAI, setIsSubmittingAI] = useState(false);
-  const editorRef = useRef(null);
+  const editorRef = useRef<any>(null);
   const pathname = usePathname();
   const { theme } = useTheme();
   const form = useForm<FormValues>({
@@ -54,8 +54,7 @@ export default function AnswerForm({ questionId, userId, questionTitleContent }:
       toast.success('Answer submitted successfully');
       form.reset();
       if (editorRef.current) {
-        const editor = editorRef.current as any;
-        editor.setContent('');
+        editorRef.current.setContent('');
       }
     } catch (error) {
       console.log(error);
@@ -80,21 +79,15 @@ export default function AnswerForm({ questionId, userId, questionTitleContent }:
       });
       const aiAnswer = await res.json();
 
-      // Log the response to understand its structure
-      console.log('AI Answer Response:', aiAnswer);
-
-      // Check if aiAnswer.reply exists and is a string
       if (aiAnswer && aiAnswer.reply && typeof aiAnswer.reply === 'string') {
-        // Convert plain text to HTML
         const htmlAnswer = aiAnswer.reply.replace(/\n/g, '<br />');
         if (editorRef.current) {
-          const editor = editorRef.current as any;
-          editor.setContent(htmlAnswer);
+          editorRef.current.setContent(htmlAnswer);
         }
         toast.success('AI Answer generated successfully');
       } else {
         toast.error('Unexpected AI response structure');
-        console.error('AI Answer Response:', aiAnswer); // Log for further debugging
+        console.error('AI Answer Response:', aiAnswer);
       }
     } catch (error) {
       console.log(error);
@@ -127,7 +120,6 @@ export default function AnswerForm({ questionId, userId, questionTitleContent }:
                 <FormControl>
                   <Editor
                     apiKey={envConfig.TINY_API_KEY}
-                    // @ts-ignore
                     onInit={(evt, editor) => (editorRef.current = editor)}
                     onBlur={field.onBlur}
                     onEditorChange={(content) => field.onChange(content)}
@@ -154,14 +146,39 @@ export default function AnswerForm({ questionId, userId, questionTitleContent }:
                         'table',
                       ],
                       toolbar:
-                        'undo redo | codesample | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist fullscreen',
+                        'undo redo | codesample | bold italic forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist fullscreen | image',
                       content_style: 'body { font-family:Inter; font-size:14px }',
                       skin: theme === 'dark' ? 'oxide-dark' : 'oxide',
                       content_css: theme === 'dark' ? 'dark' : 'light',
-                      setup: (editor) => {
-                        editor.on('init', () => {
-                          editor.contentDocument.querySelector('p')?.remove();
+                      automatic_uploads: true,
+                      image_title: true,
+                      file_picker_types: 'image',
+                      file_picker_callback: (cb, value, meta) => {
+                        const input = document.createElement('input');
+                        input.setAttribute('type', 'file');
+                        input.setAttribute('accept', 'image/*');
+
+                        input.addEventListener('change', (e) => {
+                          const target = e.target as HTMLInputElement | null;
+                          if (target && target.files) {
+                            const file = target.files[0];
+                            const reader = new FileReader();
+                            reader.addEventListener('load', () => {
+                              if (editorRef.current && reader.result) {
+                                const base64 = (reader.result as string).split(',')[1];
+                                const id = 'blobid' + new Date().getTime();
+                                const blobCache = editorRef.current.editorUpload.blobCache;
+                                const blobInfo = blobCache.create(id, file, base64);
+                                blobCache.add(blobInfo);
+
+                                cb(blobInfo.blobUri(), { title: file.name });
+                              }
+                            });
+                            reader.readAsDataURL(file);
+                          }
                         });
+
+                        input.click();
                       },
                     }}
                   />
