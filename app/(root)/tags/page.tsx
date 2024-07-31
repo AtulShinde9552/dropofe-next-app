@@ -55,7 +55,7 @@ export default function TagsPage({ searchParams }: SearchParamsProps) {
 
   return (
     <>
-      <h1 className="h1-bold">All Tags</h1>
+      <h1 className="h1-bold">All Engineering Software/Tags</h1>
       <div className="mt-11 flex justify-between gap-5 max-sm:flex-col sm:items-center">
         <LocalSearch
           route="/tags"
