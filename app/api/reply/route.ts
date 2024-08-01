@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createReply, getRepliesByAnswerId, updateReply } from '@/actions/replay.action';
 
-export const config = {
-  runtime: 'edge',
-};
+export const runtime = 'edge';
 
 // Helper function to send response with streaming
 async function sendResponse(data: any, status: number = 200) {
