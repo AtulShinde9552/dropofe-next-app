@@ -3,5 +3,11 @@
     "api/reply.ts": {
       "runtime": "edge"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
 }
