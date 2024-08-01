@@ -1,5 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createReply, getRepliesByAnswerId, updateReply } from '@/actions/replay.action';
+
+export const config = {
+  runtime: 'edge',
+};
 
 // Helper function to send response with streaming
 async function sendResponse(data: any, status: number = 200) {
@@ -18,7 +22,7 @@ async function sendResponse(data: any, status: number = 200) {
   });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { answerId, userId, content } = await request.json();
 
@@ -42,7 +46,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const answerId = searchParams.get('answerId');
@@ -62,7 +66,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     const { replyId, content } = await request.json();
 
