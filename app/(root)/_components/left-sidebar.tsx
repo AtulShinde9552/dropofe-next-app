@@ -8,10 +8,36 @@ import { SignedOut, useUser } from '@clerk/nextjs';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { UserCircle, UserPlus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { getQuestionCount } from '@/actions/question.action';
+import { getUserCount } from '@/actions/user.action';
+import { getTagCount } from '@/actions/tag.action';
 
 export default function LeftSidebar() {
   const pathname = usePathname();
   const { user } = useUser();
+  const [questionsCount, setQuestionsCount] = useState<number | null>(null);
+  const [usersCount, setUsersCount] = useState<number | null>(null);
+  const [tagsCount, setTagsCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const [questionCount, userCount, tagCount] = await Promise.all([
+          getQuestionCount(),
+          getUserCount(),
+          getTagCount(),
+        ]);
+        setQuestionsCount(questionCount);
+        setUsersCount(userCount);
+        setTagsCount(tagCount);
+      } catch (err) {
+        console.error('Failed to fetch counts', err);
+      }
+    };
+
+    fetchCounts();
+  }, []);
 
   return (
     <aside className="background-light900_dark200 light-border sticky left-0 top-20 flex h-[calc(100vh-5rem)] flex-col border-r p-5 shadow dark:shadow-none max-sm:hidden lg:w-[250px]">
@@ -32,7 +58,7 @@ export default function LeftSidebar() {
                 key={item.route}
                 href={item.route}
                 className={`flex items-center gap-3 rounded-md p-4 text-sm ${
-                  isActive && 'primary-gradient'
+                  isActive ? 'primary-gradient' : ''
                 }`}
               >
                 <Image
@@ -40,7 +66,7 @@ export default function LeftSidebar() {
                   alt={item.label}
                   width={20}
                   height={20}
-                  className={`${isActive || 'invert-colors'}`}
+                  className={`${isActive ? '' : 'invert-colors'}`}
                 />
                 <span className={`${isActive ? 'font-bold' : 'font-medium'} max-lg:hidden`}>
                   {item.label}
@@ -48,6 +74,13 @@ export default function LeftSidebar() {
               </Link>
             );
           })}
+        </div>
+        <div className="text-white-100 dark:text-white-200 bg-white-200 mt-4 rounded-md p-4 dark:bg-gray-900">
+          <ul>
+            <li>Total Questions: {questionsCount ?? '??'}</li>
+            <li>Total Users: {usersCount ?? '??'}</li>
+            <li>All Engineering Software: {tagsCount ?? '??'}</li>
+          </ul>
         </div>
         <SignedOut>
           <div className="flex flex-col gap-3">

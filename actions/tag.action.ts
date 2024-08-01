@@ -67,6 +67,16 @@ export const getTopInteractedTags = async (params: GetTopInteractedTagsParams) =
   }
 };
 
+export const getTagCount = async () => {
+  try {
+    const count = await Tag.countDocuments();
+    return count;
+  } catch (error) {
+    console.error('Failed to fetch tag count', error);
+    throw error;
+  }
+};
+
 export const getQuestionsByTagId = async (params: GetQuestionsByTagIdParams) => {
   try {
     const { tagId, searchQuery, page = 1, pageSize = 10 } = params;

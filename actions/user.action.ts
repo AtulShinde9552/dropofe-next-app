@@ -64,6 +64,16 @@ export const getAllUsers = async (params: GetAllUsersParams) => {
   }
 };
 
+export const getUserCount = async () => {
+  try {
+    const totalUsers = await User.countDocuments({});
+    return totalUsers;
+  } catch (err) {
+    console.log('Failed to get user count', err);
+    throw err;
+  }
+};
+
 export const getUserById = async (clerkId: string) => {
   try {
     const user = await User.findOne({ clerkId: clerkId });

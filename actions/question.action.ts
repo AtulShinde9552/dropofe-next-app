@@ -88,6 +88,17 @@ export const getAllQuestions = async (params: GetAllQuestionsParams) => {
   }
 };
 
+// Add this function to your question.action.ts
+export const getQuestionCount = async () => {
+  try {
+    const totalQuestions = await Question.countDocuments({});
+    return totalQuestions;
+  } catch (err) {
+    console.log('Failed to get question count', err);
+    throw err;
+  }
+};
+
 export const getQuestionById = async (id: string) => {
   try {
     const question = await Question.findById(id)
