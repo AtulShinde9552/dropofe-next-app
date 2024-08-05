@@ -110,6 +110,7 @@ export const getQuestionsByTagId = async (params: GetQuestionsByTagIdParams) => 
       companyWeb: tag.Companywebsite,
       tagName: tag.name,
       companyName: tag.Developedby,
+      description: tag.description,
       questions,
       isNext,
     };

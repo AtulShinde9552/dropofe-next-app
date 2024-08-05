@@ -140,7 +140,7 @@ const ReplyForm: React.FC<ReplyFormProps> = ({ answerId, userId }) => {
                 className="mt-2 rounded-md bg-blue-500 p-2 text-white"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Submitting...' : editingReply ? 'Update Reply' : 'Submit Reply'}
+                {isSubmitting ? 'Submitting...' : editingReply ? 'Update Reply' : 'Comment'}
               </button>
             </form>
             <Dialog.Close asChild>
