@@ -24,14 +24,6 @@ export async function generateMetadata(
   };
 }
 
-const Engineering = [
-  'Aerospace Engineering',
-  'Chemical Engineering',
-  'Civil Engineering',
-  'Electrical Engineering',
-  'Mechanical Engineering',
-  'Petroleum Engineering',
-];
 export default async function TagDetailsPage({ params, searchParams }: ParamsSearchProps) {
   const tag = await getQuestionsByTagId({
     tagId: params.id,
@@ -53,24 +45,6 @@ export default async function TagDetailsPage({ params, searchParams }: ParamsSea
               <span className="text-lg text-[#ff7000]">{companyName}</span>
             </div>
           )}
-          <div className="mb-4">
-            <label
-              htmlFor="companySelect"
-              className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Engineering
-            </label>
-            <select
-              id="companySelect"
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-            >
-              {Engineering.map((field, index) => (
-                <option key={index} value={field}>
-                  {field}
-                </option>
-              ))}
-            </select>
-          </div>
           {description && (
             <div className="mb-4 rounded-lg bg-gray-100 p-4 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
               <span className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">

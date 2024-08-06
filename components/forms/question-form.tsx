@@ -43,7 +43,6 @@ interface Props {
 export default function QuestionForm({ userId, type, questionDetails }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
   const editorRef = useRef<any>(null);
   const router = useRouter();
@@ -65,13 +64,6 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim().toLowerCase();
     setInputValue(value);
-
-    if (value) {
-      const filtered = tags.filter((tag) => tag.toLowerCase().includes(value));
-      setFilteredSuggestions(filtered);
-    } else {
-      setFilteredSuggestions([]);
-    }
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, field: any) => {
@@ -81,19 +73,10 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
       if (tagValue.length <= 15 && !field.value.includes(tagValue)) {
         form.setValue('tags', [...field.value, tagValue]);
         setInputValue('');
-        setFilteredSuggestions([]);
       } else {
         form.trigger();
       }
     }
-  };
-
-  const handleSuggestionClick = (tag: string) => {
-    if (!form.getValues('tags').includes(tag.toLowerCase())) {
-      form.setValue('tags', [...form.getValues('tags'), tag.toLowerCase()]);
-    }
-    setInputValue('');
-    setFilteredSuggestions([]);
   };
 
   const handleTagRemove = (tag: string, field: any) => {
@@ -266,25 +249,6 @@ export default function QuestionForm({ userId, type, questionDetails }: Props) {
                       onKeyDown={(e) => handleInputKeyDown(e, field)}
                       value={inputValue}
                     />
-                    {filteredSuggestions.length > 0 && (
-                      <div
-                        className={`absolute mt-2 w-full border ${
-                          theme === 'dark' ? 'bg-dark-400' : 'bg-white'
-                        } z-10 shadow-lg`}
-                      >
-                        {filteredSuggestions.map((suggestion) => (
-                          <div
-                            key={suggestion}
-                            className={`cursor-pointer p-2 ${
-                              theme === 'dark' ? 'hover:bg-dark-400' : 'hover:bg-gray-200'
-                            }`}
-                            onClick={() => handleSuggestionClick(suggestion)}
-                          >
-                            {suggestion}
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                   {field.value.length > 0 && (
                     <div className="mt-2.5 flex items-center gap-2.5">
